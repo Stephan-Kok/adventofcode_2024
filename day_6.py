@@ -63,7 +63,7 @@ class Guard:
 
     def move(self, x, y):
         self.matrix[self.y][self.x] = "X"
-        self.matrix[y][x] = "^"
+        # self.matrix[y][x] = "^"
         self.x = x
         self.y = y
 
@@ -84,24 +84,20 @@ class Guard:
     def check_obstructions(self, pos_x: int, pos_y: int):
         if pos_x < 0 or pos_x > width - 1 or pos_y < 0 or pos_y > height - 1:
             return Obstructions.FREE
-        if self.matrix[pos_y][pos_x] == ".":
-            return Obstructions.OPEN
         if self.matrix[pos_y][pos_x] == "#":
             # Loop counter hack for part2
-            index = "X:" + str(pos_x) + "Y:" + str(pos_y)
-            self.object_count[index] = self.object_count.get(index, 0) + 1
-            if self.object_count[index] > 5:
+            index = "X:" + str(pos_x) + "Y:" + str(pos_y) + "D:" + str(self.direction)
+            if index in self.object_count:
                 raise ValueError("PossibleLoopEncountered")
+            self.object_count[index] = True
             return Obstructions.OBJECT
-        if self.matrix[pos_y][pos_x] == "X":
-            return Obstructions.OPEN
-        return None
+        return Obstructions.OPEN
 
 # part1
 guard = Guard(start_x, start_y, matrix)
 guard.walk()
 print(sum([line.count("X") for line in guard.matrix]))
-
+print("between time: ", datetime.now() - time_start)
 # part2
 # This part is dependable on part1!
 
@@ -131,7 +127,7 @@ def part2(mark_x, mark_y):
     return False
 
 def collect_result(result):
-    if (result):
+    if result:
         results.append(result)
 
 if __name__ == '__main__':
