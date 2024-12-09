@@ -60,27 +60,33 @@ def attempt_swap(tuple_size, tuple_id, index, tuple_disk):
                 # Equal swap
                 tuple_disk[index] = (".", tuple_size, True)
                 tuple_disk[i] = (tuple_id, tuple_size, False)
+                return False
             else:
                 # there will be leftover free space
                 tuple_disk[i] = (".", tmp_tuple_size - tuple_size, True)
                 tuple_disk[index] = (".", tuple_size, True)
                 tuple_disk.insert(i, (tuple_id, tuple_size, False))
-            break
+                return True
 
+    return False
 
 def part2():
     tuple_disk = get_tuple_disk()
     reverse_disk = tuple_disk.copy()
     reverse_disk.reverse()
 
-    for i in range(len(reverse_disk)):
+    array_size = len(reverse_disk)
+    max_diff = 0
+    for i in range(array_size):
         id, size, is_free = reverse_disk[i]
         if is_free:
             continue
 
         # Index keeps changing since adding new lists
-        index = tuple_disk.index((id, size, is_free))
-        attempt_swap(size, id, index, tuple_disk)
+        cutoff = array_size - i - max_diff - 3 if array_size - i - max_diff - 3 > 0 else 0
+        index = tuple_disk.index((id, size, is_free), cutoff)
+        if attempt_swap(size, id, index, tuple_disk):
+            max_diff += 1
 
     # Done just calculate hash
     total = 0
@@ -95,8 +101,9 @@ def part2():
     return total
 
 r1 = part1(get_disk())
-r2 = part2()
 print("Part1", r1)
+print("part1 time: ", datetime.now() - time_start)
+r2 = part2()
 print("Part2", r2)
 
 time_end = datetime.now()
