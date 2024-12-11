@@ -7,7 +7,7 @@ with open('day_11.input', 'r') as file:
     lines = file.readlines()
 
 @lru_cache(maxsize=None)
-def stone_split(stone, blinks):
+def stone_blink_times(stone, blinks):
     stones = [stone]
     for blink in range(blinks):
         new_stones = []
@@ -38,9 +38,8 @@ class PlutonianPebbles:
                 dict_count = 1
                 if stone in dic:
                     dict_count = dic[stone]
-                # print(item, i)
-                split = stone_split(stone, 5)
-                for key in split:
+                resulting_stones = stone_blink_times(stone, 5)
+                for key in resulting_stones:
                     if key in tmp_dic:
                         tmp_dic[key] += dict_count
                     else:
@@ -54,4 +53,4 @@ class PlutonianPebbles:
 PlutonianPebbles().blinks_75_times()
 
 print("Total time: ", datetime.now() - time_start)
-print(stone_split.cache_info())
+print(stone_blink_times.cache_info())
