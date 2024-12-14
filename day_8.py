@@ -14,7 +14,7 @@ for y in range(len(lines)):
                 antennas[val].append((x,y))
             else:
                 antennas[val] = [(x,y)]
-print("Keys", antennas.keys())
+# print("Keys", antennas.keys())
 
 # ######## PART 1
 def add_combination(x, y, array):
@@ -31,7 +31,7 @@ for key, value in antennas.items():
             dy = y1 - y2
             add_combination(x1 + dx, y1 + dy, combinations)
             add_combination(x2 - dx, y2 - dy, combinations)
-print("Combinations:", combinations)
+# print("Combinations:", combinations)
 
 matrix = []
 for line in lines:
@@ -43,15 +43,13 @@ for x,y in combinations:
         count += 1
         matrix[y][x] = "#"
 
-for row in matrix:
-    print(" ".join(map(str, row[:-1])))
-print("Total part1", count)
+# for row in matrix:
+#     print(" ".join(map(str, row[:-1])))
+# print("Total part1", count)
 
 
 # ######## PART 2
 def add_resonate_combination(x, y, array, dx, dy):
-    if (x == 6 and y == 5):
-        print("got here")
     while 0 <= x < len(lines[0]) - 1 and 0 <= y < len(lines):
         array.append((x, y))
         x += dx
@@ -79,8 +77,8 @@ for x,y in new_combinations:
         count += 1
         matrix[y][x] = "#"
 
-for row in matrix:
-    print(" ".join(map(str, row[:-1])))
+# for row in matrix:
+#     print(" ".join(map(str, row[:-1])))
 
 print("Total part1", count)
 print("Total part2", count + sum([len(sublist) for sublist in antennas.values()]))

@@ -37,7 +37,7 @@ class ClawMachine:
 
             c1_int = int(c1.round())
             c2_int = int(c2.round())
-            if ax * int(c1_int) + bx * int(c2_int) == px and ay * int(c1_int) + by * int(c2_int) == py:
+            if ax * c1_int + bx * c2_int == px and ay * c1_int + by * c2_int == py:
                 solutions.append(c1_int*3 + c2_int)
         return sum(solutions)
 
