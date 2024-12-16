@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 from enum import Enum
 import copy
+from typing import Tuple, Optional
 
 time_start = datetime.now()
 
@@ -16,19 +17,30 @@ class Direction(Enum):
 
 walls = {}
 path = {}
+Node = Tuple[Tuple[int, int], Optional['Node']]
+
+def get_nodes(node: Node):
+    result = []
+    (value, prev_node) = node
+    while prev_node is not None:
+        result.append(value)
+        (value, prev_node) = prev_node
+    result.append(value)
+    return result
+
 
 class ReindeerPosition:
     reindeer: (int, int)
     end: (int, int)
     points: int
-    path: [(int,int)]
+    linked_path_list: Node
     direction: Direction
 
     def __init__(self):
         self.points = 0
         self.direction = Direction.RIGHT
         self.height = len(lines)
-        self.path = []
+        # self.path = []
         self.width = len(lines[0]) - 1
         for y in range(self.height):
             for x in range(self.width):
@@ -42,6 +54,8 @@ class ReindeerPosition:
                     self.end = (x, y)
 
     def fancy_print(self):
+        path = get_nodes(self.linked_path_list)
+
         for y in range(self.height):
             line = ""
             for x in range(self.width):
@@ -54,7 +68,7 @@ class ReindeerPosition:
                 if (x, y) == self.end:
                     line += "E"
                     continue
-                if (x, y) in self.path:
+                if (x, y) in path:
                     line += '\033[93m' + "*" + '\033[0m'
                     continue
                 line += "."
@@ -92,7 +106,8 @@ class ReindeerPosition:
         mazes = [self]
         best = None
         finishers = []
-        self.path.append(self.reindeer)
+        # self.path.append(self.reindeer)
+        self.linked_path_list = (self.reindeer, None)
         while len(mazes) != 0:
             new_mazes = []
             for maze in mazes:
@@ -101,6 +116,7 @@ class ReindeerPosition:
                     # Skip if wall
                     if (x, y) in walls:
                         continue
+
                     # Skip if already visited with lower cost
                     previous_cost = path.get((x,y))
                     if previous_cost is not None:
@@ -111,14 +127,16 @@ class ReindeerPosition:
                                 continue
                     else:
                         previous_cost = maze.points + cost
+                    path[(x, y)] = min(previous_cost, maze.points + cost)
 
-                    maze_copy = copy.deepcopy(maze)
+                    # make copy of reindeer position and add for next iteration
+                    maze_copy = copy.copy(maze)
                     maze_copy.points += cost
                     maze_copy.reindeer = (x, y)
-                    maze_copy.path.append((x, y))
-                    path[(x, y)] = min(previous_cost, maze_copy.points)
+                    maze_copy.linked_path_list = ((x, y), maze_copy.linked_path_list)
                     maze_copy.direction = direction
 
+                    # At the end of maze!
                     if maze_copy.reindeer == maze_copy.end:
                         finishers.append(maze_copy)
                         if best is None or best.points >= maze.points:
@@ -138,15 +156,15 @@ maze = ReindeerPosition()
 # maze.fancy_print()
 result, finishers = maze.escape()
 result.fancy_print()
-print("part1", result.points)
+# print("part1", result.points)
 
 seats = []
 for finisher in finishers:
     if finisher.points != result.points:
         continue
-    # finisher.fancy_print()
-    # print("finisher", finisher.points)
-    for seat in finisher.path:
+
+    path = get_nodes(finisher.linked_path_list)
+    for seat in path:
         if seat not in seats:
             seats.append(seat)
 
