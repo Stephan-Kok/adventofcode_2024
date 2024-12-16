@@ -40,7 +40,6 @@ class ReindeerPosition:
         self.points = 0
         self.direction = Direction.RIGHT
         self.height = len(lines)
-        # self.path = []
         self.width = len(lines[0]) - 1
         for y in range(self.height):
             for x in range(self.width):
